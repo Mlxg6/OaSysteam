@@ -1,0 +1,1 @@
+import{i as e}from"./request-Bo9Nm4OM.js";const o=n=>e({url:"announcement/page",method:"get",params:n}),a=n=>e({url:"announcement/save",method:"post",data:n}),s=n=>e({url:"announcement/save",method:"post",data:n}),c=n=>e.delete("/announcement/+".concat(n));export{s as a,a as b,c,o as g};
