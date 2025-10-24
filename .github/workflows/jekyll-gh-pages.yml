@@ -1,0 +1,42 @@
+name: Vue 项目自动部署到 GitHub Pages
+
+# 触发条件：当代码推送到 main 分支时执行
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # 使用 Ubuntu 环境
+
+    steps:
+      # 1. 拉取 GitHub 仓库代码
+      - name: 拉取源代码
+        uses: actions/checkout@v4
+
+      # 2. 安装 Node.js 环境（选择你项目使用的 Node 版本，如 18）
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm' # 缓存 npm 依赖，加速下次构建
+
+      # 3. 安装项目依赖
+      - name: 安装依赖
+        run: npm install
+
+      # 4. 构建项目（生成 dist 文件夹）
+      - name: 构建项目
+        run: npm run build
+        env:
+          # 可选：如果项目需要环境变量，在这里配置（如 API 地址）
+          VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }} # 若需保密，可在仓库 Settings → Secrets 中添加
+
+      # 5. 将构建后的 dist 推送到 gh-pages 分支
+      - name: 部署到 gh-pages 分支
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub 自动生成的 Token，无需手动配置
+          publish_dir: ./dist # 要部署的文件夹（即 Vite 构建后的 dist）
+          publish_branch: gh-pages # 部署到的目标分支
+          force_orphan: true # 清空 gh-pages 分支历史，只保留最新构建产物（可选，推荐）
